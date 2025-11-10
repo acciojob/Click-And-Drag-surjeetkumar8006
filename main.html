@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Draggable Cubes</title>
+  <title>Draggable HTML Elements</title>
   <style>
     * {
       box-sizing: border-box;
@@ -14,104 +14,102 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #f2f2f2;
+      background: #eaeaea;
       font-family: sans-serif;
     }
 
-    .container {
+    .items {
       position: relative;
       width: 600px;
       height: 400px;
       background: #fff;
       border: 3px solid #000;
-      display: flex;
-      flex-wrap: wrap;
-      align-content: flex-start;
-      padding: 10px;
+      border-radius: 8px;
+      overflow: hidden;
     }
 
-    .cube {
+    .item {
       width: 80px;
       height: 80px;
-      margin: 10px;
       background: dodgerblue;
-      color: #fff;
-      font-size: 20px;
+      color: white;
+      font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
-      user-select: none;
       position: absolute;
       cursor: grab;
+      user-select: none;
       border-radius: 6px;
-      font-weight: bold;
+      transition: box-shadow 0.2s;
     }
 
-    .cube:active {
+    .item:active {
       cursor: grabbing;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
     }
   </style>
 </head>
 <body>
-  <div class="container" id="container">
-    <div class="cube">1</div>
-    <div class="cube">2</div>
-    <div class="cube">3</div>
-    <div class="cube">4</div>
-    <div class="cube">5</div>
-    <div class="cube">6</div>
+  <div class="items" id="items">
+    <div class="item">01</div>
+    <div class="item">02</div>
+    <div class="item">03</div>
+    <div class="item">04</div>
+    <div class="item">05</div>
+    <div class="item">06</div>
   </div>
 
   <script>
-    const container = document.getElementById('container');
-    const cubes = document.querySelectorAll('.cube');
+    const container = document.querySelector('.items');
+    const items = document.querySelectorAll('.item');
 
-    let activeCube = null;
+    let activeItem = null;
     let offsetX = 0;
     let offsetY = 0;
 
-    // Arrange cubes in grid layout initially
-    const cols = 3;  // number of columns
+    const cols = 3;
     const gap = 20;
-    const cubeSize = 80;
+    const size = 80;
 
-    cubes.forEach((cube, index) => {
-      cube.style.position = 'absolute';
-      const row = Math.floor(index / cols);
-      const col = index % cols;
-      cube.style.left = col * (cubeSize + gap) + 10 + 'px';
-      cube.style.top = row * (cubeSize + gap) + 10 + 'px';
+    // Arrange items in grid
+    items.forEach((item, i) => {
+      const row = Math.floor(i / cols);
+      const col = i % cols;
+      item.style.left = `${col * (size + gap) + 20}px`;
+      item.style.top = `${row * (size + gap) + 20}px`;
 
-      cube.addEventListener('mousedown', (e) => {
-        activeCube = cube;
-        const rect = cube.getBoundingClientRect();
+      // Start dragging
+      item.addEventListener('mousedown', (e) => {
+        activeItem = item;
+        const rect = item.getBoundingClientRect();
         offsetX = e.clientX - rect.left;
         offsetY = e.clientY - rect.top;
-        cube.style.zIndex = 1000;
+        item.style.zIndex = 1000;
       });
     });
 
     document.addEventListener('mousemove', (e) => {
-      if (!activeCube) return;
+      if (!activeItem) return;
 
       const containerRect = container.getBoundingClientRect();
-      const cubeRect = activeCube.getBoundingClientRect();
+      const itemRect = activeItem.getBoundingClientRect();
 
       let newLeft = e.clientX - containerRect.left - offsetX;
       let newTop = e.clientY - containerRect.top - offsetY;
 
-      // Constrain inside container
-      newLeft = Math.max(0, Math.min(newLeft, containerRect.width - cubeRect.width));
-      newTop = Math.max(0, Math.min(newTop, containerRect.height - cubeRect.height));
+      // Keep inside bounds
+      newLeft = Math.max(0, Math.min(newLeft, containerRect.width - itemRect.width));
+      newTop = Math.max(0, Math.min(newTop, containerRect.height - itemRect.height));
 
-      activeCube.style.left = newLeft + 'px';
-      activeCube.style.top = newTop + 'px';
+      activeItem.style.left = `${newLeft}px`;
+      activeItem.style.top = `${newTop}px`;
     });
 
     document.addEventListener('mouseup', () => {
-      if (activeCube) {
-        activeCube.style.zIndex = 1;
-        activeCube = null;
+      if (activeItem) {
+        activeItem.style.zIndex = 1;
+        activeItem = null;
       }
     });
   </script>
