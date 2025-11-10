@@ -34,61 +34,6 @@
     <div class="item item25">25</div>
   </div>
 
-<script>
-// Select all items and container
-const container = document.querySelector('.items');
-const items = document.querySelectorAll('.item');
-
-let activeItem = null;
-let offsetX = 0;
-let offsetY = 0;
-
-// Make each item draggable
-items.forEach(item => {
-  // Set initial position style
-  item.style.position = 'absolute';
-  const rect = item.getBoundingClientRect();
-  item.style.left = rect.left - container.getBoundingClientRect().left + 'px';
-  item.style.top = rect.top - container.getBoundingClientRect().top + 'px';
-
-  // When mouse pressed on cube
-  item.addEventListener('mousedown', (e) => {
-    activeItem = item;
-    offsetX = e.clientX - item.offsetLeft;
-    offsetY = e.clientY - item.offsetTop;
-    item.style.cursor = 'grabbing';
-  });
-});
-
-// Handle mouse move on container
-document.addEventListener('mousemove', (e) => {
-  if (!activeItem) return;
-
-  const containerRect = container.getBoundingClientRect();
-  const itemRect = activeItem.getBoundingClientRect();
-
-  // Calculate new positions
-  let newLeft = e.clientX - containerRect.left - offsetX;
-  let newTop = e.clientY - containerRect.top - offsetY;
-
-  // Constrain within boundaries
-  newLeft = Math.max(0, Math.min(newLeft, containerRect.width - itemRect.width));
-  newTop = Math.max(0, Math.min(newTop, containerRect.height - itemRect.height));
-
-  // Apply new positions
-  activeItem.style.left = `${newLeft}px`;
-  activeItem.style.top = `${newTop}px`;
-});
-
-// Release cube when mouse up
-document.addEventListener('mouseup', () => {
-  if (activeItem) {
-    activeItem.style.cursor = 'grab';
-  }
-  activeItem = null;
-});
-
-</script>
-
-  </body>
+  <script src="script.js"></script>
+</body>
 </html>
