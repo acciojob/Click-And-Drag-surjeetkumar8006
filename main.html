@@ -34,6 +34,67 @@
     <div class="item item25">25</div>
   </div>
 
-  <script src="script.js"></script>
+<script>
+  const container = document.querySelector('.items');
+  const cubes = document.querySelectorAll('.item');
+
+  let activeCube = null;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  // Arrange cubes in grid form on load
+  const cols = 5;
+  const gap = 20;
+  const cubeSize = 100;
+
+  cubes.forEach((cube, index) => {
+    cube.style.position = 'absolute';
+    const row = Math.floor(index / cols);
+    const col = index % cols;
+    cube.style.left = `${col * (cubeSize + gap)}px`;
+    cube.style.top = `${row * (cubeSize + gap)}px`;
+    cube.style.width = cubeSize + 'px';
+    cube.style.height = cubeSize + 'px';
+    cube.style.cursor = 'grab';
+
+    // Start dragging
+    cube.addEventListener('mousedown', (e) => {
+      activeCube = cube;
+      const rect = cube.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      cube.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+  });
+
+  // Move cube with mouse
+  document.addEventListener('mousemove', (e) => {
+    if (!activeCube) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const cubeRect = activeCube.getBoundingClientRect();
+
+    let newLeft = e.clientX - containerRect.left - offsetX;
+    let newTop = e.clientY - containerRect.top - offsetY;
+
+    // Prevent moving outside container
+    newLeft = Math.max(0, Math.min(newLeft, containerRect.width - cubeRect.width));
+    newTop = Math.max(0, Math.min(newTop, containerRect.height - cubeRect.height));
+
+    activeCube.style.left = newLeft + 'px';
+    activeCube.style.top = newTop + 'px';
+  });
+
+  // Drop cube on mouseup
+  document.addEventListener('mouseup', () => {
+    if (activeCube) {
+      activeCube.style.cursor = 'grab';
+      activeCube = null;
+    }
+  });
+</script>
+
 </body>
 </html>
