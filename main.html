@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Draggable Scroll Container</title>
+  <title>Draggable Scroll</title>
 
   <style>
     body {
@@ -12,7 +12,6 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      font-family: sans-serif;
     }
 
     .items {
@@ -31,8 +30,8 @@
       height: 120px;
       margin: 10px;
       background: dodgerblue;
-      color: white;
-      font-size: 32px;
+      color: #fff;
+      font-size: 24px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -53,39 +52,36 @@
     <div class="item">07</div>
     <div class="item">08</div>
     <div class="item">09</div>
-    <div class="item">10</div>
   </div>
 
   <script>
-    const container = document.getElementById('items');
+    const container = document.getElementById("items");
 
     let isDown = false;
     let startX = 0;
     let scrollLeft = 0;
 
-    container.addEventListener('mousedown', (e) => {
+    container.addEventListener("mousedown", (e) => {
       isDown = true;
-      startX = e.pageX - container.offsetLeft;
+      startX = e.clientX;          // FIXED
       scrollLeft = container.scrollLeft;
-      container.style.cursor = 'grabbing';
+      container.style.cursor = "grabbing";
     });
 
-    container.addEventListener('mouseleave', () => {
+    container.addEventListener("mouseleave", () => {
       isDown = false;
-      container.style.cursor = 'grab';
+      container.style.cursor = "grab";
     });
 
-    container.addEventListener('mouseup', () => {
+    container.addEventListener("mouseup", () => {
       isDown = false;
-      container.style.cursor = 'grab';
+      container.style.cursor = "grab";
     });
 
-    container.addEventListener('mousemove', (e) => {
+    container.addEventListener("mousemove", (e) => {
       if (!isDown) return;
 
-      e.preventDefault();
-      const x = e.pageX - container.offsetLeft;
-      const walk = (x - startX) * 1;
+      const walk = (e.clientX - startX) * 1;  // FIXED
       container.scrollLeft = scrollLeft - walk;
     });
   </script>
