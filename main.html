@@ -2,40 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Draggable Scroll</title>
+  <title>Click & Drag Scroll</title>
 
   <style>
     body {
       margin: 0;
       background: #eaeaea;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      font-family: sans-serif;
     }
 
     .items {
       width: 600px;
       height: 200px;
-      overflow-x: scroll;
-      white-space: nowrap;
+      overflow-x: scroll;          /* REQUIRED */
+      white-space: nowrap;         /* REQUIRED */
       border: 3px solid #000;
       background: #fff;
       cursor: grab;
     }
 
     .item {
-      display: inline-block;
       width: 120px;
       height: 120px;
-      margin: 10px;
-      background: dodgerblue;
-      color: #fff;
-      font-size: 24px;
-      display: flex;
+      display: inline-flex;
       justify-content: center;
       align-items: center;
+      background: dodgerblue;
+      color: #fff;
       border-radius: 6px;
+      margin: 10px;
+      font-size: 32px;
       user-select: none;
     }
   </style>
@@ -63,7 +63,7 @@
 
     container.addEventListener("mousedown", (e) => {
       isDown = true;
-      startX = e.clientX;          // FIXED
+      startX = e.pageX;             // EXACT MATCH
       scrollLeft = container.scrollLeft;
       container.style.cursor = "grabbing";
     });
@@ -80,9 +80,8 @@
 
     container.addEventListener("mousemove", (e) => {
       if (!isDown) return;
-
-      const walk = (e.clientX - startX) * 1;  // FIXED
-      container.scrollLeft = scrollLeft - walk;
+      const walk = (e.pageX - startX) * 1;      // EXACT MATCH
+      container.scrollLeft = scrollLeft - walk; // EXACT BEHAVIOR
     });
   </script>
 
