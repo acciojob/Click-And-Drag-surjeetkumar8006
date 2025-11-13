@@ -2,13 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Draggable HTML Elements</title>
+  <title>Draggable Cubes with Scroll</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
       height: 100vh;
@@ -22,32 +18,30 @@
     .items {
       position: relative;
       width: 600px;
-      height: 400px;
+      height: 300px;
       background: #fff;
       border: 3px solid #000;
       border-radius: 8px;
-      overflow: hidden;
+      overflow: auto;
+      white-space: nowrap;
     }
 
     .item {
+      display: inline-block;
       width: 80px;
       height: 80px;
+      margin: 20px;
       background: dodgerblue;
       color: white;
+      font-size: 24px;
       font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: absolute;
       cursor: grab;
       user-select: none;
       border-radius: 6px;
-      transition: box-shadow 0.2s;
-    }
-
-    .item:active {
-      cursor: grabbing;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      position: relative;
     }
   </style>
 </head>
@@ -60,61 +54,56 @@
     <div class="item">04</div>
     <div class="item">05</div>
     <div class="item">06</div>
+    <div class="item">07</div>
+    <div class="item">08</div>
+    <div class="item">09</div>
+    <div class="item">10</div>
   </div>
 
   <script>
-    const container = document.querySelector('.items');
-    const items = document.querySelectorAll('.item');
+    const container = document.getElementById("items");
+    const items = document.querySelectorAll(".item");
 
+    let dragging = false;
     let activeItem = null;
     let offsetX = 0;
     let offsetY = 0;
 
-    const cols = 3;
-    const gap = 20;
-    const size = 80;
-
-    // Arrange items in grid
-    items.forEach((item, i) => {
-      const row = Math.floor(i / cols);
-      const col = i % cols;
-
-      item.style.left = `${col * (size + gap) + 20}px`;
-      item.style.top = `${row * (size + gap) + 20}px`;
-
-      item.addEventListener('mousedown', (e) => {
+    items.forEach(item => {
+      item.addEventListener("mousedown", e => {
+        dragging = true;
         activeItem = item;
-        const rect = item.getBoundingClientRect();
 
+        const rect = item.getBoundingClientRect();
         offsetX = e.clientX - rect.left;
         offsetY = e.clientY - rect.top;
 
+        item.style.position = "absolute";
         item.style.zIndex = 1000;
       });
     });
 
-    document.addEventListener('mousemove', (e) => {
-      if (!activeItem) return;
+    document.addEventListener("mousemove", e => {
+      if (!dragging || !activeItem) return;
 
-      const containerRect = container.getBoundingClientRect();
-      const itemWidth = activeItem.offsetWidth;
-      const itemHeight = activeItem.offsetHeight;
+      const box = container.getBoundingClientRect();
+      let left = e.clientX - box.left - offsetX;
+      let top = e.clientY - box.top - offsetY;
 
-      let newLeft = e.clientX - containerRect.left - offsetX;
-      let newTop = e.clientY - containerRect.top - offsetY;
+      if (left < 50) container.scrollLeft -= 10;
+      if (left > box.width - 100) container.scrollLeft += 10;
 
-      newLeft = Math.max(0, Math.min(newLeft, containerRect.width - itemWidth));
-      newTop = Math.max(0, Math.min(newTop, containerRect.height - itemHeight));
+      left = Math.max(container.scrollLeft, left);
+      top = Math.max(0, Math.min(top, box.height - activeItem.offsetHeight));
 
-      activeItem.style.left = `${newLeft}px`;
-      activeItem.style.top = `${newTop}px`;
+      activeItem.style.left = left + "px";
+      activeItem.style.top = top + "px";
     });
 
-    document.addEventListener('mouseup', () => {
-      if (activeItem) {
-        activeItem.style.zIndex = 1;
-        activeItem = null;
-      }
+    document.addEventListener("mouseup", () => {
+      dragging = false;
+      if (activeItem) activeItem.style.zIndex = 1;
+      activeItem = null;
     });
   </script>
 
