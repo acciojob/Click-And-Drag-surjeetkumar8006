@@ -2,46 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Draggable Cubes with Scroll</title>
+  <title>Draggable Scroll Container</title>
 
   <style>
     body {
       margin: 0;
-      height: 100vh;
+      background: #eaeaea;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #eaeaea;
+      height: 100vh;
       font-family: sans-serif;
     }
 
     .items {
-      position: relative;
       width: 600px;
-      height: 300px;
-      background: #fff;
-      border: 3px solid #000;
-      border-radius: 8px;
-      overflow: auto;
+      height: 200px;
+      overflow-x: scroll;
       white-space: nowrap;
+      border: 3px solid #000;
+      background: #fff;
+      cursor: grab;
     }
 
     .item {
       display: inline-block;
-      width: 80px;
-      height: 80px;
-      margin: 20px;
+      width: 120px;
+      height: 120px;
+      margin: 10px;
       background: dodgerblue;
       color: white;
-      font-size: 24px;
-      font-weight: bold;
+      font-size: 32px;
       display: flex;
-      align-items: center;
       justify-content: center;
-      cursor: grab;
-      user-select: none;
+      align-items: center;
       border-radius: 6px;
-      position: relative;
+      user-select: none;
     }
   </style>
 </head>
@@ -61,49 +57,36 @@
   </div>
 
   <script>
-    const container = document.getElementById("items");
-    const items = document.querySelectorAll(".item");
+    const container = document.getElementById('items');
 
-    let dragging = false;
-    let activeItem = null;
-    let offsetX = 0;
-    let offsetY = 0;
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
 
-    items.forEach(item => {
-      item.addEventListener("mousedown", e => {
-        dragging = true;
-        activeItem = item;
-
-        const rect = item.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-
-        item.style.position = "absolute";
-        item.style.zIndex = 1000;
-      });
+    container.addEventListener('mousedown', (e) => {
+      isDown = true;
+      startX = e.pageX - container.offsetLeft;
+      scrollLeft = container.scrollLeft;
+      container.style.cursor = 'grabbing';
     });
 
-    document.addEventListener("mousemove", e => {
-      if (!dragging || !activeItem) return;
-
-      const box = container.getBoundingClientRect();
-      let left = e.clientX - box.left - offsetX;
-      let top = e.clientY - box.top - offsetY;
-
-      if (left < 50) container.scrollLeft -= 10;
-      if (left > box.width - 100) container.scrollLeft += 10;
-
-      left = Math.max(container.scrollLeft, left);
-      top = Math.max(0, Math.min(top, box.height - activeItem.offsetHeight));
-
-      activeItem.style.left = left + "px";
-      activeItem.style.top = top + "px";
+    container.addEventListener('mouseleave', () => {
+      isDown = false;
+      container.style.cursor = 'grab';
     });
 
-    document.addEventListener("mouseup", () => {
-      dragging = false;
-      if (activeItem) activeItem.style.zIndex = 1;
-      activeItem = null;
+    container.addEventListener('mouseup', () => {
+      isDown = false;
+      container.style.cursor = 'grab';
+    });
+
+    container.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX) * 1;
+      container.scrollLeft = scrollLeft - walk;
     });
   </script>
 
